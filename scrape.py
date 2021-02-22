@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import re
 import mysql.connector
 from datetime import date
-# import urllib2
+import numpy as np
 
 mydb = mysql.connector.connect(
     host="localhost",
@@ -15,59 +15,58 @@ today = date.today()
 
 mycursor = mydb.cursor()
 
-url = "/home/william/Documents/greg project documents/statements/5fd79fa9c0073/5fd79fa9c0073s.html"
-page = open(url)
-p = BeautifulSoup(page.read(),features="lxml")
+def getFile(url):
+    page = open(url)
+    p = BeautifulSoup(page.read(),features="lxml")
 
-texts = [str.strip(x) for x in p.strings if str.strip(x) != '']
-#print(texts)
+
+    texts = [str.strip(x) for x in p.strings if str.strip(x) != '']
+
+    return texts
 
 results = []
 
+def getTable(texts):
+    for i in texts:
+        if "Opening balance" in i:
+            index = texts.index(i)
+            texts = texts[index+2:]
+            #print(texts)
+            break
 
-for i in texts:
-    if "Opening balance" in i:
-        index = texts.index(i)
-        texts = texts[index+2:]
-        print(texts)
-        break
+    for i in texts:
+        if "Closing balance" in i:
+            index = texts.index(i)
+            remainder = texts[index:]
+            texts = texts[:index]
 
-for i in texts:
-    if "Date" in i:
-        index = texts.index(i)
-        texts = texts[:index]
-        print(texts)
-        break
-#print(texts)
-textsDup = texts.copy()
-dateslist = []
-for i in texts:
-    x = re.search("^[0-3][0-9]-[a-zA-Z]{3}-[0-9][0-9]$", i)
-    if x:
-        #print("Found a Date! " + i)
-        dateslist.append(texts.index(i))
-        pos = texts.index(i)
-        texts[pos]= "done"
+            break
 
-#print(dateslist)
-rowsfinal=[]
-def getRows():
+    return texts, remainder
+
+
+def findDates(texts):
+    dateslist = []
+    for i in texts:
+        x = re.search("^[0-3][0-9]-[a-zA-Z]{3}-[0-9][0-9]$", i)
+        if x:
+            dateslist.append(texts.index(i))
+            pos = texts.index(i)
+            texts[pos]= "done"
+    return texts, dateslist
+
+
+def getRows(textsDup, dateslist):
+    rowsfinal=[]
     rows = []
     count = 0
     for i in dateslist:
         if count+1 >= len(dateslist):
             rows.append(textsDup[i:])
-            #print("found end of dates")
         else:
             pos = dateslist[count+1]
-            #print("row in texts = ")
-            #print(textsDup[i:pos])
             rows.append(textsDup[i:pos])
-        #print(dateslist[count+1] -1)
-        #print(rows[count])
         count +=1
-    #print(textsDup)
-
 
 
     for i in rows:
@@ -75,10 +74,8 @@ def getRows():
         length = len(i)
         count = 4
         if length > 4:
-            #print(i)
             rowsfinal.append(i[:count])
             while count < length:
-                #print("adding extra rows")
                 temp = []
                 temp.append(date)
                 final = temp + i[count:count+3]
@@ -86,6 +83,7 @@ def getRows():
                 count += 3
         else:
             rowsfinal.append(i)
+    return rowsfinal
 
 
 def editPrice(val):
@@ -106,20 +104,87 @@ def editDate(date):
     return res
 
 
-def insertdb(row):
-    caseno = 991122
-    sql = "INSERT INTO sheet (case_number, created, start_date, value) VALUES (%s, %s, %s, %s)"
-    val = (caseno, today, row[0], row[3])
+def insertdb(row, type, caseno):
+    #caseno = 991122
+    sql = "INSERT INTO sheet (case_number, created, type, start_date, value) VALUES (%s, %s, %s, %s, %s)"
+    val = (caseno, today, type, row[0], row[3])
 
     mycursor.execute(sql,val)
 
 
     mydb.commit()
-getRows()
-#print(rowsfinal)
 
-for i in rowsfinal:
-    i[3] = editPrice(i[3])
-    i[0] = editDate(i[0])
-    insertdb(i)
-    print(i)
+
+def cleanTable(tables):
+
+    count = 0
+    tableno = len(tables)
+    while count < tableno:
+        count2 = 0
+        while count2 < len(tables[count]):
+            if "Date" in tables[count][count2]:
+                if "Description" in tables[count][count2]:
+                    if "Demands" in tables[count][count2]:
+                        tables[count].remove(tables[count][count2])
+
+            if "Receipts" in tables[count][count2]:
+                if "Balance" in tables[count][count2]:
+                    tables[count].remove(tables[count][count2])
+
+            count2 += 1
+        count += 1
+    return tables
+
+
+def tablecount(texts):
+    count = 0
+    for i in texts:
+        if "Opening balance" in i:
+            count = count + 1
+    return count
+
+def getType(table):
+    #print("getting type")
+    for i in table:
+        #print(i)
+        if "Service charge" in i[1]:
+            #print("service charge table found")
+            return "service charge"
+        if "ground rent" in i[1]:
+            #print("ground rent table found")
+            return "ground rent"
+
+def run(url, caseno):
+    texts = getFile(url)
+    count = tablecount(texts)
+
+    tables = []
+
+    for i in range(count):
+        texts, remainder = getTable(texts)
+        textsDup = texts.copy()
+        texts, dates = findDates(texts)
+        tables.append(getRows(textsDup, dates))
+
+        texts = remainder
+        #print(texts)
+
+    tables = cleanTable(tables)
+
+
+    for a in tables:
+        print("new table \n")
+        for i in a:
+            i[3] = editPrice(i[3])
+            i[0] = editDate(i[0])
+            #insertdb(i)
+            #print(i)
+        type = getType(a)
+        for i in a:
+            insertdb(i, type, caseno)
+
+
+url = "/home/william/Documents/greg project documents/statements/5fd79fa9c0073/5fd79fa9c0073s.html"
+#url = "/home/william/Documents/greg project documents/statements/city tower/statements.html"
+casno = 1
+run(url, casno)
