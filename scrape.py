@@ -3,6 +3,7 @@ import re
 import mysql.connector
 from datetime import date
 import numpy as np
+import sys
 
 mydb = mysql.connector.connect(
     host="localhost",
@@ -106,8 +107,8 @@ def editDate(date):
 
 def insertdb(row, type, caseno):
     #caseno = 991122
-    sql = "INSERT INTO sheet (case_number, created, type, start_date, value) VALUES (%s, %s, %s, %s, %s)"
-    val = (caseno, today, type, row[0], row[3])
+    sql = "INSERT INTO sheet (case_number, created, type, start_date, value, interest) VALUES (%s, %s, %s, %s, %s, %s)"
+    val = (caseno, today, type, row[0], row[3], "false")
 
     mycursor.execute(sql,val)
 
@@ -184,7 +185,8 @@ def run(url, caseno):
             insertdb(i, type, caseno)
 
 
-url = "/home/william/Documents/greg project documents/statements/5fd79fa9c0073/5fd79fa9c0073s.html"
-#url = "/home/william/Documents/greg project documents/statements/city tower/statements.html"
-casno = 1
-run(url, casno)
+#url = "/home/william/Documents/greg project documents/statements/5fd79fa9c0073/5fd79fa9c0073s.html"
+#prefix = "/home/william/Documents/greg project documents/statements/city tower/statements.html"
+url = str(sys.argv[2])
+caseno = str(sys.argv[1])
+run(url, caseno)
