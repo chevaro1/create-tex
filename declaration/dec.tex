@@ -1,0 +1,68 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{multicol}
+
+\include{declaration}
+\pagenumbering{gobble}
+
+\begin{document}
+\noindent{\addressee} \\
+\street\\
+\locality\\
+\town\\
+\postcode\\
+
+\noindent Date \dateset\par
+\vspace{5 mm}
+\noindent Dear Sir/Madam\\
+\textbf{\underline{Borrower: \borrower}}\\
+\noindent\textbf{\underline{Property: \property}}
+\vspace{2 mm}\\
+\textbf{\underline{Mortgage account number:..............................................}}\\
+\weborrower, being the \lessees\ of the above Property,have signed this letter of declaration in accordance with the provisions of section 81(1)(b) of the Housing Act 1996 to confirm that the total sum of arrears, charges, interest and legal fees set out below, due under the terms of our lease, is payable in full to \address. We have signed this letter to avoid legal action being taken against
+us and have no objection to you, as our mortgagee, making payment to the solicitors acting
+on behalf of \address\ in settlement of arrears, legal fees and interest due. Details of the solicitors are as follows:
+
+\begin{multicols}{2}
+\noindent Lazarev Cleaver LLP\\
+Warnford Court\\
+29 Throgmorton street\\
+London EC2N 1AT\\
+Ref: \caseno\\
+Tel: 020 7987 6300
+
+\columnbreak
+
+\noindent For payment by bank transfer:\\
+Name: Lazarev Cleaver LLP Client Account\\
+Sorting code: 40-18-22\\
+Account number: 23668029\\
+Reference: \caseno
+
+\end{multicols}
+\par
+\noindent The following amounts are due:\\
+\indent Arrears: \arrears\\
+\indent Interest: \interest\\
+\indent Legal costs: \legalcosts\\
+\indent Total: \total
+
+\vspace{4 mm}
+\noindent We agree that the total amount due of \total\ and any further accrued interest is to be
+paid by cheque or bank transfer to Lazarev Cleaver LLP and this amount will be debited from
+our mortgage account together with any administration fees due to yourself.
+
+\vspace{6 mm}
+\begin{multicols}{2}
+\noindent \rule{4cm}{0.15mm}\\
+Signature\\
+Name:
+
+\columnbreak
+\noindent \rule{4cm}{0.15mm}\\
+Signature\\
+Name:
+
+\end{multicols}
+\end{document}

@@ -110,7 +110,7 @@ def printdeclaration(lit):
     for i in lit:
         f.write(i)
     f.close()
-    shutil.copy("/home/william/github/create-tex/declaration/main.tex", "/home/william/github/create-tex/declaration/" + caseno)
+    shutil.copy("/home/william/github/create-tex/declaration/dec.tex", "/home/william/github/create-tex/declaration/" + caseno)
 
 def printloc(lit):
     filename = "/home/william/github/create-tex/loc/" + caseno + "/loc.tex"
@@ -120,6 +120,6 @@ def printloc(lit):
     for i in lit:
         f.write(i)
     f.close()
-    shutil.copy("/home/william/github/create-tex/loc/main.tex", "/home/william/github/create-tex/loc/" + caseno)
+    shutil.copy("/home/william/github/create-tex/loc/letterOfClaim.tex", "/home/william/github/create-tex/loc/" + caseno)
 
 content(res)
