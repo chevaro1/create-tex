@@ -2,11 +2,14 @@ import mysql.connector
 import sys
 import os
 import shutil
+import re
 
 mydb = mysql.connector.connect(
     host="localhost",
-    user="global",
-    password="global2020",
+    user="william",
+    password="FRandBOD",
+    #user="global",
+    #password="global2020",
     database="doc_automation"
     )
 
@@ -32,6 +35,15 @@ def getTotals():
     result = mycursor.fetchall()
 
     return result
+
+def editLine(word):
+    word = re.sub("&", "\&", word)
+    word = re.sub("#", "\#", word)
+    word = re.sub("}", "\}", word)
+    word = re.sub("{", "\{", word)
+    word = re.sub("%", "\%", word)
+    #word = re.sub("$", "\$", word)
+    return word
 
 
 decTotals= [["arrears", 3], ["interest", 2], ["legalcosts", 7], ["total", 10]]
@@ -90,11 +102,12 @@ def writeLoc(res):
 
 
 def newCommand(name, content):
+    content = editLine(str(content))
     prefix = "\\newcommand{\\"
     postname = "}{"
     postfix = "}\n"
 
-    lit = (prefix + name + postname + str(content) + postfix)
+    lit = (prefix + name + postname + content + postfix)
     return lit
 
 
@@ -103,23 +116,23 @@ def newCommand(name, content):
 
 
 def printdeclaration(lit):
-    filename = "/home/william/github/create-tex/declaration/" + caseno + "/declaration.tex"
+    filename = "/var/www/python/create-tex/declaration/" + caseno + "/declaration.tex"
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     f = open(filename, "w")
     #lit = ["\\newcommand{\dateset}{20/2/2021}", "\\newcommand{\dateset}{20/2/2021}"]
     for i in lit:
         f.write(i)
     f.close()
-    shutil.copy("/home/william/github/create-tex/declaration/dec.tex", "/home/william/github/create-tex/declaration/" + caseno)
+    shutil.copy("/var/www/python/create-tex/declaration/dec.tex", "/var/www/python/create-tex/declaration/" + caseno)
 
 def printloc(lit):
-    filename = "/home/william/github/create-tex/loc/" + caseno + "/loc.tex"
+    filename = "/var/www/python/create-tex/loc/" + caseno + "/loc.tex"
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     f = open(filename, "w")
     #lit = ["\\newcommand{\dateset}{20/2/2021}", "\\newcommand{\dateset}{20/2/2021}"]
     for i in lit:
         f.write(i)
     f.close()
-    shutil.copy("/home/william/github/create-tex/loc/letterOfClaim.tex", "/home/william/github/create-tex/loc/" + caseno)
+    shutil.copy("/var/www/python/create-tex/loc/letterOfClaim.tex", "/var/www/python/create-tex/loc/" + caseno)
 
 content(res)

@@ -7,8 +7,10 @@ import sys
 
 mydb = mysql.connector.connect(
     host="localhost",
-    user="global",
-    password="global2020",
+    user="william",
+    password="FRandBOD",
+    #user="global",
+    #password="global2020",
     database="doc_automation"
     )
 
@@ -185,7 +187,8 @@ def run(url, caseno):
             insertdb(i, type, caseno)
 
 
-#url = "/home/william/Documents/greg project documents/statements/5fd79fa9c0073/5fd79fa9c0073s.html"
+#url = "/home/william/github/action-automation/upload/fulltest_v1s.html"
+#caseno = "fulltest_v1"
 #prefix = "/home/william/Documents/greg project documents/statements/city tower/statements.html"
 url = str(sys.argv[2])
 caseno = str(sys.argv[1])

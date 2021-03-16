@@ -6,8 +6,10 @@ import sys
 
 mydb = mysql.connector.connect(
     host="localhost",
-    user="global",
-    password="global2020",
+    user="william",
+    password="FRandBOD",
+    #user="global",
+    #password="global2020",
     database="doc_automation"
     )
 
